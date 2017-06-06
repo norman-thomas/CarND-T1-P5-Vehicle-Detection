@@ -42,7 +42,12 @@ def draw_boxes(img, results):
     top_xmax = det_xmax[top_indices]
     top_ymax = det_ymax[top_indices]
 
-    colors = plt.cm.hsv(np.linspace(0, 1, 21)).tolist()
+    colors = {
+        'Car': (255, 0, 0),
+        'Bus': (0, 0, 255),
+        'Motorbike': (255, 255, 0),
+        'Bicycle': (0, 255, 255)
+    }
 
     for i in range(top_conf.shape[0]):
         xmin = int(round(top_xmin[i] * img.shape[1]))
@@ -52,20 +57,18 @@ def draw_boxes(img, results):
         score = top_conf[i]
         label = int(top_label_indices[i])
         label_name = voc_classes[label - 1]
-        display_txt = '{}'.format(label_name)
-        coords = (xmin, ymin), xmax-xmin+1, ymax-ymin+1
-        color = colors[label]
-        if label_name == 'Car':
-            cv2.rectangle(img, (xmin,ymin), (xmax,ymax), (0,255,0), 5)
-            #currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-            #currentAxis.text(xmin, ymin, display_txt, bbox={'facecolor':color, 'alpha':0.5})
+        display_text = '{} [{:0.2f}]'.format(label_name, score)
+        if label_name in set(('Car', 'Bus', 'Motorbike', 'Bicycle')):
+            color = colors[label_name]
+            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), color, 3)
+            cv2.putText(img, display_text, (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, .8, color, 2)
     return img
 
 
 def process_video(input_img):
     inputs = []
-    # input_img_cropped = input_img[120:720,680:1280,:]
-    # img = cv2.resize(input_img_cropped, (300, 300))
+    #input_img_cropped = input_img[120:720,680:1280,:]
+    #img = cv2.resize(input_img_cropped, (300, 300))
     img = cv2.resize(input_img, (300, 300))
     img = image.img_to_array(img)
     inputs.append(img.copy())
@@ -75,14 +78,15 @@ def process_video(input_img):
     preds = model.predict(inputs, batch_size=1, verbose=0)
     results = bbox_util.detection_out(preds)
 
-    # final_img_cropped = draw_boxes(input_img_cropped, preds, results)
-    # final_img = input_img
-    # input_img[120:720,680:1280,:] = final_img_cropped
+    #final_img_cropped = draw_boxes(input_img_cropped, results[0])
+    #final_img = input_img.copy()
+    #final_img[120:720,680:1280,:] = final_img_cropped
     final_img = draw_boxes(input_img, results[0])
 
     return final_img
 
-output = 'project_video_video_SSD.mp4'
-clip1 = VideoFileClip('project_video.mp4')
-clip = clip1.fl_image(process_video)
+output = 'project_video_SSD.mp4'
+clip = VideoFileClip('project_video.mp4')
+#clip = clip.subclip(t_start=35, t_end=44)
+clip = clip.fl_image(process_video)
 clip.write_videofile(output, audio=False)
