@@ -3,17 +3,19 @@ import numpy as np
 from keras.preprocessing import image
 from keras.applications.imagenet_utils import preprocess_input
 from collections import deque
+from PIL import Image, ImageFont, ImageDraw
 
 from .ssd_utils import BBoxUtility
 
 
 class Vehicle:
 
-    def __init__(self, location, size, type):
+    def __init__(self, location, size, type, n_history=50):
         self._type = type
         self._location = location
         self._size = size
         self._detected = True
+        self._history = deque([], n_history)
 
     @property
     def types(self):
@@ -37,11 +39,15 @@ class VehicleDetector:
 
     def __init__(self, model, n_history=50):
         self._model = model
-        self._history = deque([], n_history)
         self._bbox_util = BBoxUtility(self.NUM_CLASSES)
 
     @classmethod
     def draw_boxes(cls, img, results):
+        draw_img = Image.fromarray(img)
+        draw = ImageDraw.Draw(draw_img, mode='RGBA')
+        font = ImageFont.truetype("font/GillSans.ttc", 18)
+        padding = 2
+
         # Parse the outputs.
         det_label = results[:, 0]
         det_conf = results[:, 1]
@@ -61,10 +67,10 @@ class VehicleDetector:
         top_ymax = det_ymax[top_indices]
 
         colors = {
-            'Car': (255, 0, 0),
+            'Car': (255, 128, 0),
             'Bus': (0, 0, 255),
-            'Motorbike': (255, 255, 0),
-            'Bicycle': (0, 255, 255)
+            'Motorbike': (128, 0, 255),
+            'Bicycle': (255, 0, 128)
         }
 
         for i in range(top_conf.shape[0]):
@@ -78,29 +84,37 @@ class VehicleDetector:
             display_text = '{} [{:0.2f}]'.format(label_name, score)
             if label_name in set(('Car', 'Bus', 'Motorbike', 'Bicycle')):
                 color = colors[label_name]
-                cv2.rectangle(img, (xmin, ymin), (xmax, ymax), color, 3)
-                cv2.putText(img, display_text, (xmin, ymin - 10), cv2.FONT_HERSHEY_PLAIN, 1., color, 2)
-        return img
+                size = draw.textsize(display_text, font)
+                _draw_rectangle(draw, (xmin, ymin, xmax, ymax), color)
+                _draw_rectangle(draw, (xmin, ymin, xmin + size[0] + 2*padding, ymin - size[1] - 2*padding), None, fill=(*color, 40))
+                draw.text((xmin + padding, ymin - size[1] - padding - 2), display_text, (255, 255, 255), font=font)
 
+        return np.asarray(draw_img)
 
-    def video_pipeline(self):
-        def process_video(input_img):
-            inputs = []
-            #input_img_cropped = input_img[120:720,680:1280,:]
-            #img = cv2.resize(input_img_cropped, (300, 300))
-            img = cv2.resize(input_img, (300, 300))
-            img = image.img_to_array(img)
-            inputs.append(img.copy())
-            inputs = preprocess_input(np.array(inputs))
-            inputs = np.expand_dims(inputs[0], axis=0)
+    def detect(self, input_img):
+        inputs = []
+        img = cv2.resize(input_img, (300, 300))
+        img = image.img_to_array(img)
+        inputs.append(img.copy())
+        inputs = preprocess_input(np.array(inputs))
+        inputs = np.expand_dims(inputs[0], axis=0)
 
-            preds = self._model.predict(inputs, batch_size=1, verbose=0)
-            results = self._bbox_util.detection_out(preds)
+        preds = self._model.predict(inputs, batch_size=1, verbose=0)
+        results = self._bbox_util.detection_out(preds)
 
-            #final_img_cropped = draw_boxes(input_img_cropped, results[0])
-            #final_img = input_img.copy()
-            #final_img[120:720,680:1280,:] = final_img_cropped
-            final_img = self.draw_boxes(input_img, results[0])
+        final_img = self.draw_boxes(input_img, results[0])
 
-            return final_img
-        return process_video
+        return final_img
+
+    @property
+    def pipeline(self):
+        def process_frame(input_img):
+            return self.detect(input_img)
+        return process_frame
+
+def _draw_rectangle(draw, corners, color, fill=None, thickness=3):
+    start = -thickness//2
+    end = start + thickness
+    for i in range(start, end):
+        points = [val + i for val in corners]
+        draw.rectangle(points, outline=color, fill=fill)
