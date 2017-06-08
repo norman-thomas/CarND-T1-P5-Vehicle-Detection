@@ -1,3 +1,0 @@
-[submodule "ssd_keras"]
-	path = ssd_keras
-	url = git@github.com:rykov8/ssd_keras.git

@@ -40,7 +40,6 @@ class VehicleDetector:
         self._history = deque([], n_history)
         self._bbox_util = BBoxUtility(self.NUM_CLASSES)
 
-
     @classmethod
     def draw_boxes(cls, img, results):
         # Parse the outputs.
