@@ -10,12 +10,25 @@ For this project I decided to use a deep learning based approach as opposed to t
 
 ## Choice of Neural Network
 
-There are several neural network architectures, which have been developed to solve the task of detecting object boundaries in an image. Most prominently, R-CNN, Fast-R-CNN, Faster-R-CNN, YOLO and SSD are known to yield good results. Comparing the speed and accuracy of these networks quickly reveals that YOLO and SSD are the fastest options, with SSD taking the lead. Accuracy-wise SSD has high scores. Out of these considerations I chose to apply SSD300 for this project.
+There are several neural network architectures, which have been developed to solve the task of detecting object boundaries in an image. Most prominently, R-CNN, Fast-R-CNN, Faster-R-CNN, YOLO and SSD are known to yield good results. Comparing the speed and accuracy of these networks quickly reveals that YOLO and SSD are the fastest options, with SSD taking the lead. Accuracy-wise SSD has high scores. SSD exists in two variants: SSD300 and SSD512. The numbers denote the pixel dimensions of the input images. While SSD512 has a slightly higher accuracy, SSD300 has shorter processing times per image and therefore results in a higher fps rate. Out of these considerations I chose to apply SSD300 for this project.
 
 
 # Single Shot Multibox Detector (SSD)
 
+The [SSD network](https://arxiv.org/abs/1512.02325) is based on a convolutional network structure. Typically, VGG-16 is used as base network, on top of which, instead of fully connected layers, more convolutional layers are stacked. Objects are detected by relying on features detected in various layers from the network. As illustrated below, the features from six layers are used for object detection.
+
 ![SSD network](examples/SSD.png)
+
+## Implementation
+
+The original SSD network was implemented using Caffe. There are also a Keras ports existing [here](https://github.com/rykov8/ssd_keras) and [here](https://github.com/oarriaga/single_shot_multibox_detector). I use the latter for this project as it supports Keras 2. The network implementation in this repository can be found [here](helpers/ssd.py).
+
+## Training
+
+Training the SSD300 network takes a considerable amount of time. As pre-trained weights for this network exist, I chose to use the weights available [here](https://github.com/oarriaga/single_shot_multibox_detector/blob/master/trained_models/weights_SSD300.hdf5). The weights are included in this repository [here](weights_SSD300.hdf5).
+
+## Usage
+
 
 
 
@@ -24,10 +37,15 @@ There are several neural network architectures, which have been developed to sol
 # References
 
 [Towards a real-time vehicle detection: SSD multibox approach](https://chatbotslife.com/towards-a-real-time-vehicle-detection-ssd-multibox-approach-2519af2751c)
+
 [SSD: Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
+
 [YOLO](https://pjreddie.com/darknet/yolo/)
+
 [YOLOv2](https://arxiv.org/abs/1612.08242)
+
 [YOLOv2 in Keras/TensorFlow](https://github.com/allanzelener/YAD2K)
+
 
 ---
 
