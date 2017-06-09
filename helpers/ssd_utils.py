@@ -190,7 +190,6 @@ class BBoxUtility(object):
 
         # Arguments
             predictions: Numpy array of predicted values.
-            num_classes: Number of classes for prediction.
             background_label_id: Label of background class.
             keep_top_k: Number of total bboxes to be kept per image
                 after nms step.
