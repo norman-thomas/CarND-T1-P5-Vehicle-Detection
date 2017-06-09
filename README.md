@@ -97,19 +97,28 @@ I additionally uploaded two more videos into this repository:
 
 # Analysis
 
+In general the deep learning approach to solving the vehicle detection problem seems very elegant compared to the manual crafting of features using OpenCV in combination with an SVM classifier. The latter not only requires a lot of parameter tuning but also is much slower and cannot be considered a "real time" solution. Although this comparison is not entirely fair, because the SSD is accelerated by using a GPU. Speeding up the HOG / SVM solution requires more thought and manual splitting of the algorithm into parallelizable parts.
+
+All in all, the results above are very satisfying, but the SSD, too, has room for improvement. I used pre-trained weights, but I think this part could be improved as the network has difficulties detecting objects exceeding or not reaching certain dimensions. As can be seen in my own test videos, further away cars are mostly not detected because, after shrinking the frame to 300x300 pixels, they don't contain enough features anymore to be detected. The same happens when a car almost completely fills the frame. Therefore I suspect training with more various scales of objects would help mitigate this problem.
+
+Another issue I observed was that object detection works less reliably when the recording angle is tilted. This is an issue with recording on a motorbike. In curves the bike and therefore the video recording is tilted. This is obviously not a problem for cars as the camera is fixed to the car and always recorded horizontally. But it was nevertheless interesting to observe. Training with augmented rotated images would likely solve this.
+
+## Outlook
+
+End of 2016 a revised version of YOLO ([YOLO 9000](https://arxiv.org/abs/1612.08242)) was published, which claims to have even higher accuracy and also higher fps-rates than SSD. This could be a nice improvement for this project, which I may investigate in the future.
+
+# Acknowledgements
+
+I would like to thank @rykov8 and @oarriaga for their Keras ports of SSD, which I used in this project.
 
 # References
 
-[Towards a real-time vehicle detection: SSD multibox approach](https://chatbotslife.com/towards-a-real-time-vehicle-detection-ssd-multibox-approach-2519af2751c)
-
-[SSD: Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
-
-[YOLO](https://pjreddie.com/darknet/yolo/)
-
-[YOLOv2](https://arxiv.org/abs/1612.08242)
-
-[YOLOv2 in Keras/TensorFlow](https://github.com/allanzelener/YAD2K)
-
+* [Towards a real-time vehicle detection: SSD multibox approach](https://chatbotslife.com/towards-a-real-time-vehicle-detection-ssd-multibox-approach-2519af2751c)
+* [SSD: Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
+* [SSD in Keras 2](https://github.com/oarriaga/single_shot_multibox_detector)
+* [SSD in Keras 1](https://github.com/rykov8/ssd_keras)
+* [YOLO](https://pjreddie.com/darknet/yolo/)
+* [YOLO 9000](https://arxiv.org/abs/1612.08242)
+* [YOLOv2 in Keras/TensorFlow](https://github.com/allanzelener/YAD2K)
 ---
-
-[Evolving Boxes for Fast Vehicle Detection](https://arxiv.org/abs/1702.00254)
+* [Evolving Boxes for Fast Vehicle Detection](https://arxiv.org/abs/1702.00254)
