@@ -15,7 +15,7 @@ def process_images(detector):
     results = [detector.detect(img) for img in images]
     for i, img in enumerate(results):
         image = Image.fromarray(img)
-        image.save('output_images/test_{}.jpg'.format(i), 'JPEG')
+        image.save('output_images/test{}.jpg'.format(i+1), 'JPEG')
 
 def process_videos(detector):
     filenames = glob.glob('test_videos/*.mp4')
