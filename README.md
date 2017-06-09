@@ -73,11 +73,29 @@ With the method and settings described above, the following objects are detected
 | ![Test 6](test_images/test6.jpg) | ![Output 6](output_images/test6.jpg) |
 
 
+The annotated project video can be viewed on Youtube as linked below or directly downloaded from this repository [here](output_videos/project_video.mp4)
+
+[![Project Video Result on Youtube](http://img.youtube.com/vi/88UvIBJ19gU/0.jpg)](http://www.youtube.com/watch?v=88UvIBJ19gU)
 
 
+## Own Video
 
-## Challenge Video
+I was also curious to see how my solution performs on videos I recorded myself (on a motorbike).
 
+Here are a few annotated sample images:
+
+![Junction](examples/loth.jpg)
+![Tram](examples/bus.jpg)
+![Another Junction](examples/bridge.jpg)
+
+
+I additionally uploaded two more videos into this repository:
+
+1. [my_video_1.mp4](output_videos/my_video_1.mp4)
+1. [my_video_2.mp4](output_videos/my_video_2.mp4)
+
+
+# Analysis
 
 
 # References
@@ -91,7 +109,6 @@ With the method and settings described above, the following objects are detected
 [YOLOv2](https://arxiv.org/abs/1612.08242)
 
 [YOLOv2 in Keras/TensorFlow](https://github.com/allanzelener/YAD2K)
-
 
 ---
 
