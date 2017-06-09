@@ -72,7 +72,8 @@ class VehicleDetector:
             'Car': (255, 128, 0),
             'Bus': (0, 0, 255),
             'Motorbike': (128, 0, 255),
-            'Bicycle': (255, 0, 128)
+            'Bicycle': (255, 0, 128),
+            'Person': (255, 0, 0)
         }
 
         for i in range(top_conf.shape[0]):
@@ -84,7 +85,7 @@ class VehicleDetector:
             label = int(top_label_indices[i])
             label_name = cls.voc_classes[label - 1]
             display_text = '{} [{:0.2f}]'.format(label_name, score)
-            if label_name in set(('Car', 'Bus', 'Motorbike', 'Bicycle')):
+            if label_name in set(('Car', 'Bus', 'Motorbike', 'Bicycle', 'Person')):
                 color = colors[label_name]
                 size = draw.textsize(display_text, font)
                 _draw_rectangle(draw, (xmin, ymin, xmax, ymax), color)
