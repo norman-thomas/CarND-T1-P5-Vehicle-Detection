@@ -37,6 +37,8 @@ class VehicleDetector:
 
     NUM_CLASSES = len(voc_classes) + 1
 
+    _threshold = 0.5
+
     def __init__(self, model, n_history=50):
         self._model = model
         self._bbox_util = BBoxUtility(self.NUM_CLASSES)
@@ -56,8 +58,8 @@ class VehicleDetector:
         det_xmax = results[:, 4]
         det_ymax = results[:, 5]
 
-        # Get detections with confidence higher than 0.6.
-        top_indices = [i for i, conf in enumerate(det_conf) if conf >= 0.6]
+        # Get detections with confidence higher than threshold
+        top_indices = [i for i, conf in enumerate(det_conf) if conf >= cls._threshold]
 
         top_conf = det_conf[top_indices]
         top_label_indices = det_label[top_indices].tolist()
