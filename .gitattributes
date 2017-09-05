@@ -1,2 +1,1 @@
-*.mp4 filter=lfs diff=lfs merge=lfs -text
 weights_SSD300.hdf5 filter=lfs diff=lfs merge=lfs -text
